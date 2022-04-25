@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<head>
+<title>Two Systems</title>
+<meta charset="UTF-8">
+<link rel="stylesheet"
+    href=
+	'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css'
+>
+<script type="text/javascript" src="http://latex.codecogs.com/latexit.js">
+</script>
+<script type="text/javascript">
+</script>
+
+<style type="text/css">
+hr {
+	background-color: black;
+	height: 2px;
+	width: 60%;
+	margin-left: auto;
+	margin-right:auto;
+}
+.sc {
+	font-variant: small-caps;
+}
+.bf {
+	font-weight: bold;
+}
+img {
+	vertical-align: bottom:
+}
+</style>
+</head>
+<body>
+<div class='container'>
+<h1>Two systems statistics computation</h1>
+	<span class="small">
+	<!-- anonymized 
+	Encoded by Raphael Finkel 5/2016, based on 
+	Greville G. Corbett and Sebastian Fedden,
+	<em>
+	Simple versus concurrent feature systems:
+	     nominal classification in Mian.
+	</em>
+	-->
+	Definitions are <a href="#defs">below</a>.
+	</span>
+	<hr>
+
+<TMPL_IF NAME="result">
+<pre><TMPL_VAR name="result"></pre>
+<TMPL_ELSE>
+<form action='twoSystems.cgi'
+accept-charset="UTF-8"
+method='post' enctype='multipart/form-data'>
+Enter lines of data, each specifying one edge of the bipartite graph, such as
+<pre>
+masculine round 4
+feminine round 3
+masculine flat 2
+</pre>
+<textarea name='data' rows=5 cols=50>
+</textarea>
+<label><input type="checkbox" name='full'>full output</label>
+<input type="reset" class="btn btn-info" value="clear">
+<input type="submit" class="btn btn-success" value="submit">
+</form>
+</TMPL_IF>
+
+</div>
+<div class="container">
+<a id="defs"></a>
+<h2>Definitions</h2>
+<p>
+We measure the discrepancy between a putative two-system scheme
+and a canonical two-system scheme.  In order to do so, we
+need to first describe a canonical two-system scheme.  
+</p><p>
+Say that there are two systems, <span lang="latex">A</span> and <span
+lang="latex">B</span> (such as
+gender and classifier).
+They have possible values
+<span lang="latex">A_1</span>, <span lang="latex">A_2</span> ... (such as 
+<span class="sc">masculine</span>,
+<span class="sc">feminine</span>,
+<span class="sc">neuter1</span>),
+and <span lang="latex">B_1</span>, <span lang="latex">B_2</span> ... (such as 
+<span class="sc">m-classifier</span>,
+<span class="sc">f-classifier</span>,
+<span class="sc">long</span>).
+</p><p>
+We represent <span class="bf">type frequencies</span> as a fraction of the whole:
+<span lang="latex">f(A_1)</span>, 
+<span lang="latex">f(A_2)</span>, 
+and so forth,
+where <span lang="latex">\sum_i f(A_i) = \sum_j f(B_j) = 1</span>.
+So if most nouns are <span class="sc">masculine</span>,
+we might have <span lang="latex">f(A_1) = 0.8</span>,
+and all the other <span lang="latex">f(A_i)</span> values are small.
+</p><p>
+In a canonical language, we do not expect that
+<span lang="latex">f(A_1) = f(A_2) = ...</span>;
+a canonical language might have any distribution of
+the frequencies, because languages represent the real world, which does not
+have a uniform distribution of, for instance, differently shaped objects.
+But we do expect a canonical language to have edge frequencies (in the
+bipartite graph) that respect the type frequencies.  So the edge 
+<span lang="latex">A_i B_j</span> ought
+to have expected frequency
+<span lang="latex">e(A_i B_j) = f(A_i) \times f(B_j)</span>.  In
+particular, we expect every possible edge to have non-zero frequency.
+</p><p>
+We denote the observed frequencies of each edge <span lang="latex">A_i
+B_j</span> as <span lang="latex">o(A_i B_j)</span>.
+These observed frequencies might differ from the expected frequency.
+The discrepancy of edge <span lang="latex">A_i B_j</span> is
+<span lang="latex">d(A_i B_j) = e(A_i B_j) - o(A_i B_j)</span>.
+Some discrepancies are negative; others are positive.  The sum of all
+discrepancies <span lang="latex">\sum_{i,j} d(A_i B_j) = 0</span>.  Therefore,
+we ignore all negative
+discrepancies; they are exactly balanced by positive discrepancies.
+We therefore define the <span class="bf">total discrepancy</span>
+<span lang="latex">T = {1 \over 2} \sum_{i,j} | d(A_i B_j) |</span>, which is
+equivalent to summing
+only the positive discrepancies.
+</p><p>
+The maximum possible discrepancy when there are <span lang="latex">n</span>
+values in one system
+and <span lang="latex">m</span> values in the other one, where <span
+lang="latex">m \geq n</span>,
+occurs when there are only <span lang="latex">m</span> edges in the bipartite
+graph in a fashion shown
+in this figure:
+<div style="margin: auto; width: 10%">
+<img alt='m dots, n dots' src="../worst.png" style="height: 100px;"/>
+</div>
+Here, thick lines represent a large number of nouns, and thin lines
+represent a vanishingly small number of nouns.
+Such a scheme
+clearly has only one system, even though it poses as a two-system scheme.
+Simple computation shows that <span lang="latex">T = 1 - {1 \over n} -
+\epsilon</span>.
+For example, if <span lang="latex">n = 4</span>, the maximum possible
+discrepancy is <span lang="latex">T = 0.75</span>,
+independent of <span lang="latex">m</span>.
+We can normalize our total discrepancy measure by dividing by this maximum.
+So for a language
+that has four genders and six classifiers, we set <span lang="latex">n =
+4</span>, so the maximum
+possible discrepancy is <span lang="latex"> 0.75</span>.  The <span class="bf">normalized
+total discrepancy</span> is <span lang="latex">N = T / {(1 - {1 \over n})} = (n T) /
+(n - 1)</span>.  It is always a value
+between 0 and 1 (inclusive).  A value of 0 means no discrepancy; the scheme
+clearly has two systems.  A value of 1 means maximum discrepancy; the scheme
+clearly has only one system.
+</p>
+</div>
+</body>
+</html>
+<!-- vim:spell filetype=html
+-->
